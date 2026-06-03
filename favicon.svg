@@ -8,31 +8,44 @@
       <stop offset="0%" stop-color="#FFAA00"/>
       <stop offset="100%" stop-color="#FF5500"/>
     </linearGradient>
+    <linearGradient id="stripGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1e1e1e"/>
+      <stop offset="100%" stop-color="#151515"/>
+    </linearGradient>
+    <clipPath id="roundClip">
+      <rect width="512" height="512" rx="108" ry="108"/>
+    </clipPath>
   </defs>
 
-  <!-- Background -->
-  <rect width="512" height="512" rx="108" ry="108" fill="url(#bgGrad)"/>
+  <!-- Everything clipped to rounded rect -->
+  <g clip-path="url(#roundClip)">
 
-  <!-- Border -->
-  <rect width="504" height="504" x="4" y="4" rx="105" ry="105" fill="none" stroke="#FF6B00" stroke-width="2" opacity="0.25"/>
+    <!-- Background -->
+    <rect width="512" height="512" fill="url(#bgGrad)"/>
 
-  <!-- X — clean, no glow -->
-  <line x1="130" y1="108" x2="370" y2="348" stroke="url(#xGrad)" stroke-width="68" stroke-linecap="round"/>
-  <line x1="370" y1="108" x2="130" y2="348" stroke="url(#xGrad)" stroke-width="68" stroke-linecap="round"/>
+    <!-- X -->
+    <line x1="112" y1="96" x2="400" y2="368" stroke="url(#xGrad)" stroke-width="74" stroke-linecap="round"/>
+    <line x1="400" y1="96" x2="112" y2="368" stroke="url(#xGrad)" stroke-width="74" stroke-linecap="round"/>
 
-  <!-- Lock — top right, clean -->
-  <g transform="translate(356, 32)">
-    <rect x="0" y="44" width="72" height="58" rx="11" ry="11" fill="#FF6B00" opacity="0.9"/>
-    <path d="M13 44 L13 26 Q13 4 36 4 Q59 4 59 26 L59 44" fill="none" stroke="#FF6B00" stroke-width="12" stroke-linecap="round" opacity="0.9"/>
-    <circle cx="36" cy="70" r="8" fill="#1a1a1a"/>
-    <rect x="32" y="70" width="8" height="13" rx="3" fill="#1a1a1a"/>
+    <!-- Text strip background -->
+    <rect x="0" y="382" width="512" height="130" fill="url(#stripGrad)"/>
+
+    <!-- Top border of text strip -->
+    <rect x="0" y="382" width="512" height="3" fill="#FF6B00" opacity="0.7"/>
+
+    <!-- X-Encoder text centered -->
+    <text x="256" y="466"
+      font-family="'Arial Black', Arial, sans-serif"
+      font-size="80"
+      font-weight="900"
+      text-anchor="middle"
+      letter-spacing="-1">
+      <tspan fill="#FF6B00">X-</tspan><tspan fill="#ffffff">Encoder</tspan>
+    </text>
+
   </g>
 
-  <!-- Separator line -->
-  <rect x="40" y="378" width="432" height="1.5" rx="1" fill="#FF6B00" opacity="0.2"/>
-
-  <!-- X-Encoder text — clean, no glow -->
-  <text x="52" y="460" font-family="'Arial Black', 'Impact', sans-serif" font-size="88" font-weight="900" fill="#FF6B00" letter-spacing="-2">X-</text>
-  <text x="178" y="460" font-family="'Arial Black', 'Impact', sans-serif" font-size="88" font-weight="900" fill="#ffffff" opacity="0.92" letter-spacing="-2">Encoder</text>
+  <!-- Outer border on top -->
+  <rect width="510" height="510" x="1" y="1" rx="107" ry="107" fill="none" stroke="#FF6B00" stroke-width="2" opacity="0.3"/>
 
 </svg>
