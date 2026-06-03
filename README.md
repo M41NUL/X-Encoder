@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://i.ibb.co/Ps9sQ0MV/f379753e71f7.jpg" width="80" height="80" style="border-radius:16px" alt="X-Encoder Logo">
+<img src="favicon.svg" width="80" height="80" alt="X-Encoder Logo">
 
 # ⚡ X-Encoder
 
