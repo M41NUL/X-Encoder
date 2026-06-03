@@ -1,51 +1,40 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1c1c1c"/>
+      <stop offset="100%" stop-color="#080808"/>
+    </linearGradient>
+    <linearGradient id="xGrad" x1="5%" y1="5%" x2="95%" y2="95%">
+      <stop offset="0%" stop-color="#FFB300"/>
+      <stop offset="50%" stop-color="#FF7A00"/>
+      <stop offset="100%" stop-color="#FF4500"/>
+    </linearGradient>
+    <linearGradient id="stripGrad" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#1a1a1a"/>
-      <stop offset="100%" stop-color="#060606"/>
-    </linearGradient>
-    <linearGradient id="xGrad" x1="10%" y1="10%" x2="90%" y2="90%">
-      <stop offset="0%" stop-color="#FFAA00"/>
-      <stop offset="100%" stop-color="#FF5500"/>
-    </linearGradient>
-    <linearGradient id="stripGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#1e1e1e"/>
-      <stop offset="100%" stop-color="#151515"/>
+      <stop offset="100%" stop-color="#101010"/>
     </linearGradient>
     <clipPath id="roundClip">
       <rect width="512" height="512" rx="108" ry="108"/>
     </clipPath>
   </defs>
 
-  <!-- Everything clipped to rounded rect -->
   <g clip-path="url(#roundClip)">
-
-    <!-- Background -->
     <rect width="512" height="512" fill="url(#bgGrad)"/>
 
-    <!-- X -->
-    <line x1="112" y1="96" x2="400" y2="368" stroke="url(#xGrad)" stroke-width="74" stroke-linecap="round"/>
-    <line x1="400" y1="96" x2="112" y2="368" stroke="url(#xGrad)" stroke-width="74" stroke-linecap="round"/>
+    <!-- X — even smaller -->
+    <line x1="168" y1="128" x2="344" y2="340" stroke="url(#xGrad)" stroke-width="56" stroke-linecap="round"/>
+    <line x1="344" y1="128" x2="168" y2="340" stroke="url(#xGrad)" stroke-width="56" stroke-linecap="round"/>
 
-    <!-- Text strip background -->
-    <rect x="0" y="382" width="512" height="130" fill="url(#stripGrad)"/>
+    <rect x="0" y="376" width="512" height="136" fill="url(#stripGrad)"/>
+    <rect x="0" y="376" width="512" height="5" fill="#FF6B00"/>
 
-    <!-- Top border of text strip -->
-    <rect x="0" y="382" width="512" height="3" fill="#FF6B00" opacity="0.7"/>
-
-    <!-- X-Encoder text centered -->
-    <text x="256" y="466"
+    <text x="256" y="468"
       font-family="'Arial Black', Arial, sans-serif"
-      font-size="80"
-      font-weight="900"
-      text-anchor="middle"
-      letter-spacing="-1">
-      <tspan fill="#FF6B00">X-</tspan><tspan fill="#ffffff">Encoder</tspan>
+      font-size="84" font-weight="900"
+      text-anchor="middle" letter-spacing="-2">
+      <tspan fill="#FF6B00">X-</tspan><tspan fill="#FFFFFF">Encoder</tspan>
     </text>
-
   </g>
 
-  <!-- Outer border on top -->
-  <rect width="510" height="510" x="1" y="1" rx="107" ry="107" fill="none" stroke="#FF6B00" stroke-width="2" opacity="0.3"/>
-
+  <rect width="508" height="508" x="2" y="2" rx="107" ry="107" fill="none" stroke="#FF6B00" stroke-width="3" opacity="0.5"/>
 </svg>
