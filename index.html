@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>X-Encoder</title>
+<link rel="icon" type="image/jpeg" href="https://i.ibb.co/Ps9sQ0MV/f379753e71f7.jpg">
+<meta name="theme-color" content="#FF6B00">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<!-- CodeMirror CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/scroll/simplescrollbars.min.css">
+
+<style>
+:root {
+  --bg:#000;--bg2:#0a0a0a;--bg3:#111;--bg4:#1c1c1e;--bg5:#2c2c2e;
+  --sep:#38383a;--orange:#FF6B00;--orange-dim:rgba(255,107,0,.15);
+  --orange-glow:rgba(255,107,0,.28);--text:#fff;
+  --text2:rgba(235,235,245,.8);--text3:rgba(235,235,245,.55);
+  --text4:rgba(235,235,245,.3);--green:#30d158;--blue:#0a84ff;
+  --red:#ff453a;--yellow:#ffd60a;--purple:#bf5af2;
+  --radius:13px;--radius-lg:18px;--radius-xl:22px;
+  --mono:'JetBrains Mono','Menlo','Monaco',monospace;
+
+  /* VS Code One Dark Pro colors */
+  --vsc-bg: #1e1e1e;
+  --vsc-gutter: #252526;
+  --vsc-border: #3c3c3c;
+  --vsc-cursor: #aeafad;
+  --vsc-selection: rgba(38,79,120,.7);
+  --vsc-line-num: #858585;
+  --vsc-keyword: #569cd6;
+  --vsc-string: #ce9178;
+  --vsc-comment: #6a9955;
+  --vsc-number: #b5cea8;
+  --vsc-function: #dcdcaa;
+  --vsc-variable: #9cdcfe;
+  --vsc-type: #4ec9b0;
+  --vsc-operator: #d4d4d4;
+  --vsc-tag: #4ec9b0;
+  --vsc-attr: #9cdcfe;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,'Inter',BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;overflow-x:hidden;padding-bottom:60px}
+
+/* ── CodeMirror VS Code Theme Override ── */
+.CodeMirror {
+  height: 260px !important;
+  font-family: var(--mono) !important;
+  font-size: 13px !important;
+  line-height: 21px !important;
+  background: var(--vsc-bg) !important;
+  color: #d4d4d4 !important;
+  border: none !important;
+}
+.CodeMirror-scroll { padding: 0 !important; }
+.CodeMirror-gutters {
+  background: var(--vsc-gutter) !important;
+  border-right: 1px solid var(--vsc-border) !important;
+  min-width: 44px !important;
+  padding-right: 4px;
+}
+.CodeMirror-linenumber {
+  color: var(--vsc-line-num) !important;
+  font-size: 12px !important;
+  padding: 0 8px 0 4px !important;
+  min-width: 32px !important;
+}
+.CodeMirror-cursor { border-left: 2px solid #aeafad !important; }
+.CodeMirror-selected { background: var(--vsc-selection) !important; }
+.CodeMirror-focused .CodeMirror-selected { background: rgba(38,79,120,.85) !important; }
+.CodeMirror-line { padding-left: 10px !important; }
+.CodeMirror-activeline-background { background: rgba(255,255,255,.03) !important; }
+.CodeMirror-matchingbracket { color: #ffeb3b !important; border-bottom: 1px solid #ffeb3b; }
+.CodeMirror-scrollbar-filler { background: var(--vsc-gutter) !important; }
+
+/* VS Code One Dark Pro Syntax Colors */
+.cm-keyword    { color: #569cd6 !important; }
+.cm-def        { color: #dcdcaa !important; }
+.cm-variable   { color: #9cdcfe !important; }
+.cm-variable-2 { color: #9cdcfe !important; }
+.cm-variable-3 { color: #4ec9b0 !important; }
+.cm-property   { color: #9cdcfe !important; }
+.cm-operator   { color: #d4d4d4 !important; }
+.cm-string     { color: #ce9178 !important; }
+.cm-string-2   { color: #ce9178 !important; }
+.cm-comment    { color: #6a9955 !important; font-style: italic; }
+.cm-number     { color: #b5cea8 !important; }
+.cm-atom       { color: #569cd6 !important; }
+.cm-meta       { color: #d4d4d4 !important; }
+.cm-tag        { color: #4ec9b0 !important; }
+.cm-attribute  { color: #9cdcfe !important; }
+.cm-qualifier  { color: #d7ba7d !important; }
+.cm-builtin    { color: #dcdcaa !important; }
+.cm-bracket    { color: #d4d4d4 !important; }
+.cm-link       { color: #ce9178 !important; }
+.cm-error      { color: #f44747 !important; }
+.cm-type       { color: #4ec9b0 !important; }
+/* HTML specific */
+.cm-tag.cm-bracket { color: #808080 !important; }
+.cm-tag          { color: #4ec9b0 !important; }
+.cm-attribute    { color: #9cdcfe !important; }
+/* CSS specific */
+.cm-qualifier    { color: #d7ba7d !important; }
+.cm-property     { color: #9cdcfe !important; }
+/* Python specific */
+.cm-keyword      { color: #c586c0 !important; }  /* if/else/def/class etc → pink/purple */
+.cm-builtin      { color: #dcdcaa !important; }  /* print, len etc → yellow */
+/* JS keyword stays blue via first rule unless overridden: */
+
+/* Scrollbar */
+.CodeMirror-vscrollbar::-webkit-scrollbar,
+.CodeMirror-hscrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+.CodeMirror-vscrollbar::-webkit-scrollbar-track,
+.CodeMirror-hscrollbar::-webkit-scrollbar-track { background: var(--vsc-gutter); }
+.CodeMirror-vscrollbar::-webkit-scrollbar-thumb,
+.CodeMirror-hscrollbar::-webkit-scrollbar-thumb { background: #424242; border-radius: 4px; }
+
+/* ── VS Code Editor Shell ── */
+.editor-shell {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--vsc-border);
+  background: var(--vsc-bg);
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  transition: border-color .2s;
+}
+.editor-shell:focus-within { border-color: #007acc; box-shadow: 0 0 0 1px rgba(0,122,204,.4), 0 8px 32px rgba(0,0,0,.5); }
+
+/* Title bar like VS Code */
+.editor-titlebar {
+  display: flex;
+  align-items: center;
+  background: #252526;
+  border-bottom: 1px solid var(--vsc-border);
+  min-height: 35px;
+  padding: 0;
+  overflow: hidden;
+}
+.editor-tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 14px;
+  height: 35px;
+  border-right: 1px solid var(--vsc-border);
+  font-size: 12px;
+  font-weight: 400;
+  color: #cccccc;
+  background: var(--vsc-bg);
+  white-space: nowrap;
+  position: relative;
+}
+.editor-tab::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: #007acc;
+}
+.editor-tab .tab-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #424242;
+  flex-shrink: 0;
+}
+.editor-tab-icon { font-size: 13px; }
+.editor-tab-icon.html { color: #e44d26; }
+.editor-tab-icon.js   { color: #f7df1e; }
+.editor-tab-icon.css  { color: #264de4; }
+.editor-tab-icon.py   { color: #3776ab; }
+.editor-statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #007acc;
+  padding: 2px 10px;
+  font-size: 11px;
+  color: rgba(255,255,255,.9);
+  font-family: var(--mono);
+  min-height: 22px;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.statusbar-left, .statusbar-right { display: flex; align-items: center; gap: 10px; }
+.statusbar-item { display: flex; align-items: center; gap: 4px; opacity: .85; white-space: nowrap; }
+.statusbar-item i { font-size: 10px; }
+.editor-actions {
+  display: flex;
+  gap: 6px;
+  padding: 7px 10px;
+  background: #252526;
+  border-top: 1px solid var(--vsc-border);
+}
+
+/* ── Rest of UI ── */
+.header{padding:52px 20px 0;text-align:center}
+.header h1{font-size:30px;font-weight:700;letter-spacing:-.7px;line-height:1.15;margin-bottom:8px}
+.header h1 span{color:var(--orange)}
+.header p{font-size:14px;color:var(--text3);line-height:1.5}
+.section{margin:28px 16px 0}
+.section-label{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;padding:0 4px}
+.mode-card{background:linear-gradient(145deg,#1e1e22,#18181b);border-radius:var(--radius-lg);border:1px solid #3a3a3e;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06)}
+.mode-tabs{display:flex;background:#0d0d0f;border-bottom:1px solid var(--sep);padding:6px;gap:4px}
+.mode-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 6px;border-radius:10px;border:none;background:transparent;cursor:pointer;font-family:inherit;transition:all .2s;color:var(--text3)}
+.mode-tab i{font-size:16px}
+.mode-tab .tab-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.mode-tab.active{background:var(--orange);color:#fff;box-shadow:0 3px 12px rgba(255,107,0,.4)}
+.mode-tab:not(.active):hover{background:rgba(255,255,255,.06);color:var(--text2)}
+.mode-panel{display:none}
+.mode-panel.active{display:block}
+.input-zone{padding:14px;display:flex;flex-direction:column;gap:10px}
+.drop-zone{border:2px dashed var(--sep);border-radius:14px;padding:22px 16px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative;background:rgba(255,255,255,.02)}
+.drop-zone.dragover{border-color:var(--orange);background:var(--orange-dim)}
+.drop-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;font-size:0}
+.drop-icon{width:44px;height:44px;border-radius:14px;background:var(--orange-dim);border:1px solid var(--orange-glow);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;color:var(--orange);font-size:18px}
+.drop-title{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:4px}
+.drop-sub{font-size:12px;color:var(--text4)}
+.file-badge{display:none;align-items:center;gap:8px;background:rgba(48,209,88,.1);border:1px solid rgba(48,209,88,.25);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:600;color:var(--green)}
+.file-badge.visible{display:flex}
+.file-badge .fname{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-badge .fbytes{color:var(--text4);font-size:10px;flex-shrink:0}
+.outname-row{display:flex;align-items:center;gap:8px;background:#0d0d0f;border:1.5px solid var(--sep);border-radius:12px;padding:8px 12px;transition:border-color .2s}
+.outname-row:focus-within{border-color:var(--orange)}
+.outname-icon{width:28px;height:28px;border-radius:8px;background:var(--orange-dim);border:1px solid var(--orange-glow);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--orange);font-size:11px}
+.outname-input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:13px;font-family:var(--mono)}
+.outname-input::placeholder{color:var(--text4)}
+.outname-ext{font-size:11px;color:var(--orange);font-family:var(--mono);background:var(--orange-dim);border:1px solid var(--orange-glow);border-radius:6px;padding:3px 8px;flex-shrink:0;font-weight:600}
+.paste-divider{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text4);font-weight:600}
+.paste-divider::before,.paste-divider::after{content:'';flex:1;height:1px;background:var(--sep)}
+.sm-btn{display:flex;align-items:center;justify-content:center;gap:5px;background:#2d2d2d;border:1px solid #3c3c3c;border-radius:9px;padding:7px 12px;font-size:12px;font-weight:600;color:#cccccc;cursor:pointer;font-family:inherit;transition:all .15s}
+.sm-btn:active{opacity:.65;transform:scale(.95)}
+.sm-btn:hover{background:#3c3c3c;color:#fff}
+.sm-btn i{font-size:11px}
+.sm-btn.accent{color:#4fc1ff;border-color:rgba(79,193,255,.25);background:rgba(79,193,255,.08)}
+.sm-btn.accent:hover{background:rgba(79,193,255,.15)}
+.sm-btn.danger{color:#f44747;border-color:rgba(244,71,71,.25);background:rgba(244,71,71,.08)}
+.sm-btn.danger:hover{background:rgba(244,71,71,.15)}
+.sm-btn.paste-btn{color:#dcdcaa;border-color:rgba(220,220,170,.25);background:rgba(220,220,170,.07)}
+.options-card{background:linear-gradient(145deg,#1e1e22,#18181b);border-radius:var(--radius-lg);border:1px solid #3a3a3e;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06)}
+.opt-section{border-bottom:1px solid var(--sep)}
+.opt-section:last-child{border-bottom:none}
+.opt-header{padding:11px 14px;display:flex;align-items:center;gap:8px}
+.opt-header-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.opt-header-icon.js{background:rgba(255,214,10,.12);color:#FFD60A}
+.opt-header-icon.py{background:rgba(10,132,255,.12);color:#3776ab}
+.opt-header-icon.gen{background:var(--orange-dim);color:var(--orange)}
+.opt-title{flex:1;font-size:13px;font-weight:600;color:var(--text2)}
+.opt-badge{font-size:10px;border-radius:100px;padding:3px 9px;font-weight:600;flex-shrink:0}
+.opt-badge.js-badge{background:rgba(255,214,10,.12);color:#FFD60A;border:1px solid rgba(255,214,10,.2)}
+.opt-badge.py-badge{background:rgba(55,118,171,.15);color:#4fc1ff;border:1px solid rgba(55,118,171,.3)}
+.opt-body{padding:0 14px 14px;display:flex;flex-direction:column;gap:8px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#0d0d0f;border:1px solid var(--sep);border-radius:11px}
+.toggle-label-wrap{display:flex;flex-direction:column;gap:2px}
+.toggle-label{font-size:13px;font-weight:500;color:var(--text2)}
+.toggle-sub{font-size:11px;color:var(--text4)}
+.toggle-switch{width:46px;height:26px;border-radius:13px;background:var(--sep);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;border:none}
+.toggle-switch.on{background:var(--orange)}
+.toggle-switch::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.toggle-switch.on::after{transform:translateX(20px)}
+.obf-level-row{display:flex;flex-direction:column;gap:6px;padding:10px 12px;background:#0d0d0f;border:1px solid var(--sep);border-radius:11px}
+.obf-label{font-size:12px;font-weight:600;color:var(--text3)}
+.obf-buttons{display:flex;gap:5px}
+.obf-btn{flex:1;padding:7px 4px;border-radius:8px;border:1px solid var(--sep);background:transparent;font-size:11px;font-weight:700;font-family:inherit;color:var(--text3);cursor:pointer;transition:all .2s;text-align:center}
+.obf-btn.active{background:var(--orange);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(255,107,0,.35)}
+.py-format-row{display:flex;gap:6px}
+.py-fmt-btn{flex:1;padding:10px 6px;border-radius:11px;border:1px solid var(--sep);background:#0d0d0f;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:4px}
+.py-fmt-btn i{font-size:18px;color:var(--text4);transition:color .2s}
+.py-fmt-btn .pf-label{font-size:11px;font-weight:700;color:var(--text3)}
+.py-fmt-btn .pf-sub{font-size:10px;color:var(--text4);text-align:center;line-height:1.4}
+.py-fmt-btn.active{border-color:#3776ab;background:rgba(55,118,171,.1)}
+.py-fmt-btn.active i{color:#4fc1ff}
+.py-fmt-btn.active .pf-label{color:#4fc1ff}
+.encode-btn{width:100%;background:var(--orange);color:#fff;border:none;border-radius:var(--radius);padding:16px;font-size:17px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:-.2px;transition:opacity .15s,transform .1s;box-shadow:0 6px 24px rgba(255,107,0,.35);display:flex;align-items:center;justify-content:center;gap:8px}
+.encode-btn:active{opacity:.85;transform:scale(.98)}
+.encode-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.encode-btn.success-flash{background:var(--green)!important;box-shadow:0 6px 24px rgba(48,209,88,.4)!important}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn-spinner{width:20px;height:20px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+.progress-wrap{background:var(--bg5);border-radius:4px;height:4px;overflow:hidden;display:none;margin:12px 16px 0}
+.progress-wrap.visible{display:block}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),#FF9A00);border-radius:4px;width:0%;transition:width .3s ease}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#252526;border:1px solid var(--sep);border-radius:100px;padding:10px 20px;font-size:13px;font-weight:600;color:var(--text2);z-index:999;pointer-events:none;opacity:0;display:flex;align-items:center;gap:7px;box-shadow:0 8px 32px rgba(0,0,0,.6);transition:opacity .25s,transform .25s;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success-toast i{color:var(--green)}
+.toast.error-toast i{color:var(--red)}
+.toast.info-toast i{color:#4fc1ff}
+.footer{padding:28px 20px 40px;display:flex;flex-direction:column;align-items:center;gap:14px;border-top:1px solid var(--sep);margin-top:40px}
+.footer-links{display:flex;flex-wrap:wrap;justify-content:center;gap:7px}
+.footer-link{display:flex;align-items:center;gap:5px;background:var(--bg4);border:1px solid var(--sep);border-radius:100px;padding:5px 11px;font-size:11px;font-weight:500;color:var(--text2);text-decoration:none;transition:border-color .15s,color .15s;white-space:nowrap}
+.footer-link:hover{border-color:var(--orange);color:var(--orange)}
+.footer-copy{font-size:11px;color:var(--text4);text-align:center;line-height:1.6}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .5s cubic-bezier(.25,.46,.45,.94) both}
+.fade-up-2{animation:fadeUp .5s .08s cubic-bezier(.25,.46,.45,.94) both}
+.fade-up-3{animation:fadeUp .5s .16s cubic-bezier(.25,.46,.45,.94) both}
+.fade-up-4{animation:fadeUp .5s .24s cubic-bezier(.25,.46,.45,.94) both}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.result-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);z-index:500;align-items:center;justify-content:center;padding:20px}
+.result-overlay.active{display:flex}
+.result-card{background:#1e1e1e;border-radius:var(--radius-xl);border:1px solid #3c3c3c;width:100%;max-width:360px;text-align:center;position:relative;overflow:hidden;animation:cardPop .4s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes cardPop{from{opacity:0;transform:scale(.8) translateY(24px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.result-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--orange),transparent)}
+.pop-container{position:relative;height:100px;display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.pop-icon{width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--orange-dim);border:2px solid var(--orange-glow);position:relative;z-index:1;animation:iconPop .45s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes iconPop{from{opacity:0;transform:scale(.3) rotate(-20deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+.check-svg{width:36px;height:36px;display:block}
+.check-path{fill:none;stroke:var(--orange);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:44;stroke-dashoffset:44;animation:drawCheck .5s cubic-bezier(.4,0,.2,1) .3s forwards}
+@keyframes drawCheck{to{stroke-dashoffset:0}}
+.result-title{font-size:20px;font-weight:700;letter-spacing:-.3px;margin-bottom:5px;padding:0 20px}
+.result-sub{font-size:13px;color:var(--text3);margin-bottom:16px;padding:0 20px}
+.result-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:0 14px;margin-bottom:14px}
+.stat-box{background:#252526;border:1px solid #3c3c3c;border-radius:11px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.stat-box-val{font-size:14px;font-weight:700;color:var(--text);font-family:var(--mono)}
+.stat-box-val.green{color:var(--green)}
+.stat-box-val.orange{color:var(--orange)}
+.stat-box-val.blue{color:#4fc1ff}
+.stat-box-lbl{font-size:9px;font-weight:600;color:var(--text4);text-transform:uppercase;letter-spacing:.5px;text-align:center}
+.result-files{padding:0 14px;margin-bottom:14px;display:flex;flex-direction:column;gap:6px}
+.rf-row{background:#252526;border:1px solid #3c3c3c;border-radius:10px;padding:9px 12px;display:flex;align-items:center;gap:9px}
+.rf-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.rf-info{flex:1;min-width:0}
+.rf-name{font-size:12px;font-weight:600;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rf-meta{font-size:10px;color:var(--text4);margin-top:2px}
+.rf-dl{background:var(--orange-dim);border:1px solid var(--orange-glow);border-radius:7px;padding:5px 9px;font-size:11px;font-weight:600;color:var(--orange);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;flex-shrink:0;transition:all .15s}
+.rf-dl:active{opacity:.7;transform:scale(.93)}
+.result-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:0 14px 16px}
+.ra-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:11px;border:1px solid #3c3c3c;background:#252526;cursor:pointer;font-family:inherit;transition:all .15s}
+.ra-btn i{font-size:16px}
+.ra-btn span{font-size:10px;font-weight:600;color:var(--text3)}
+.ra-btn.dl-all i{color:var(--orange)}
+.ra-btn.cp-all i{color:#4fc1ff}
+.ra-btn.close-r i{color:var(--text3)}
+.ra-btn:active{transform:scale(.93);opacity:.7}
+.ra-btn:hover{border-color:#555}
+
+/* Line count badge */
+.editor-meta-badge {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 10px 0 4px;
+  font-size: 11px; font-family: var(--mono); color: rgba(255,255,255,.4);
+}
+</style>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+<div class="header fade-up">
+  <h1>X-<span>Encoder</span></h1>
+  <p>Encode, obfuscate &amp; protect your HTML/JS/CSS and Python files.</p>
+</div>
+
+<div class="section fade-up-2">
+  <div class="section-label">Encoding Mode</div>
+  <div class="mode-card">
+    <div class="mode-tabs">
+      <button class="mode-tab active" id="tab-web" onclick="setMode(0,this)">
+        <i class="fa-brands fa-html5"></i>
+        <span class="tab-label">HTML / JS / CSS</span>
+      </button>
+      <button class="mode-tab" id="tab-py" onclick="setMode(1,this)">
+        <i class="fa-brands fa-python"></i>
+        <span class="tab-label">Python</span>
+      </button>
+    </div>
+
+    <!-- WEB PANEL -->
+    <div class="mode-panel active" id="panel-0">
+      <div class="input-zone">
+        <div class="drop-zone" id="drop-web"
+             ondragover="doDragOver(event,'drop-web')"
+             ondragleave="doDragLeave('drop-web')"
+             ondrop="doDrop(event,'web')">
+          <input type="file" id="file-web" accept=".html,.htm,.js,.css" onchange="onFileChange(this,'web')">
+          <div class="drop-icon"><i class="fa-solid fa-file-code"></i></div>
+          <div class="drop-title">Drop your file here</div>
+          <div class="drop-sub">or tap to browse · HTML / JS / CSS</div>
+        </div>
+        <div class="file-badge" id="badge-web">
+          <i class="fa-solid fa-check-circle"></i>
+          <span class="fname" id="fname-web">—</span>
+          <span class="fbytes" id="fbytes-web"></span>
+          <button class="sm-btn danger" style="padding:4px 8px;font-size:11px;margin-left:4px;position:relative;z-index:2" onclick="clearFile('web')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="paste-divider">OR PASTE CODE</div>
+
+        <!-- VS Code style editor -->
+        <div class="editor-shell" id="editor-web-shell">
+          <div class="editor-titlebar">
+            <div class="editor-tab">
+              <i class="fa-brands fa-html5 editor-tab-icon html" id="tab-icon-web"></i>
+              <span id="tab-filename-web">untitled.html</span>
+              <div class="tab-dot"></div>
+            </div>
+            <div class="editor-meta-badge" style="margin-left:auto">
+              <span id="editor-web-lines">1 line</span>
+              <span id="editor-web-size">0 B</span>
+            </div>
+          </div>
+          <div id="editor-body-web">
+            <textarea id="paste-web" placeholder="// Paste your HTML / JS / CSS code here..." spellcheck="false"></textarea>
+          </div>
+          <div class="editor-actions">
+            <button class="sm-btn paste-btn" onclick="doPaste('web')"><i class="fa-regular fa-clipboard"></i> Paste</button>
+            <button class="sm-btn danger" onclick="clearEditor('web')"><i class="fa-regular fa-trash-can"></i> Clear</button>
+          </div>
+          <div class="editor-statusbar">
+            <div class="statusbar-left">
+              <span class="statusbar-item"><i class="fa-solid fa-code-branch"></i> X-Encoder</span>
+              <span class="statusbar-item" id="sb-lang-web"><i class="fa-brands fa-html5"></i> HTML</span>
+            </div>
+            <div class="statusbar-right">
+              <span class="statusbar-item"><i class="fa-solid fa-check-circle"></i> UTF-8</span>
+              <span class="statusbar-item"><i class="fa-solid fa-indent"></i> Spaces: 2</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="outname-row">
+          <div class="outname-icon"><i class="fa-solid fa-file-export"></i></div>
+          <input class="outname-input" id="outname-web" placeholder="filename (no extension)" value="encoded">
+          <span class="outname-ext" id="outext-web">.html</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PY PANEL -->
+    <div class="mode-panel" id="panel-1">
+      <div class="input-zone">
+        <div class="drop-zone" id="drop-py"
+             ondragover="doDragOver(event,'drop-py')"
+             ondragleave="doDragLeave('drop-py')"
+             ondrop="doDrop(event,'py')">
+          <input type="file" id="file-py" accept="*/*" onchange="onFileChangePy(this)">
+          <div class="drop-icon" style="background:rgba(55,118,171,.15);border-color:rgba(55,118,171,.35)">
+            <i class="fa-brands fa-python" style="color:#4fc1ff;font-size:20px"></i>
+          </div>
+          <div class="drop-title">Drop your Python file here</div>
+          <div class="drop-sub">or tap to browse · .py files</div>
+        </div>
+        <div class="file-badge" id="badge-py">
+          <i class="fa-solid fa-check-circle"></i>
+          <span class="fname" id="fname-py">—</span>
+          <span class="fbytes" id="fbytes-py"></span>
+          <button class="sm-btn danger" style="padding:4px 8px;font-size:11px;margin-left:4px;position:relative;z-index:2" onclick="clearFile('py')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="paste-divider">OR PASTE CODE</div>
+
+        <!-- VS Code style Python editor -->
+        <div class="editor-shell" id="editor-py-shell">
+          <div class="editor-titlebar">
+            <div class="editor-tab">
+              <i class="fa-brands fa-python editor-tab-icon py"></i>
+              <span id="tab-filename-py">untitled.py</span>
+              <div class="tab-dot"></div>
+            </div>
+            <div class="editor-meta-badge" style="margin-left:auto">
+              <span id="editor-py-lines">1 line</span>
+              <span id="editor-py-size">0 B</span>
+            </div>
+          </div>
+          <div id="editor-body-py">
+            <textarea id="paste-py" placeholder="# Paste your Python code here..." spellcheck="false"></textarea>
+          </div>
+          <div class="editor-actions">
+            <button class="sm-btn paste-btn" onclick="doPaste('py')"><i class="fa-regular fa-clipboard"></i> Paste</button>
+            <button class="sm-btn danger" onclick="clearEditor('py')"><i class="fa-regular fa-trash-can"></i> Clear</button>
+          </div>
+          <div class="editor-statusbar">
+            <div class="statusbar-left">
+              <span class="statusbar-item"><i class="fa-solid fa-code-branch"></i> X-Encoder</span>
+              <span class="statusbar-item"><i class="fa-brands fa-python"></i> Python</span>
+            </div>
+            <div class="statusbar-right">
+              <span class="statusbar-item"><i class="fa-solid fa-check-circle"></i> UTF-8</span>
+              <span class="statusbar-item"><i class="fa-solid fa-indent"></i> Spaces: 4</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="outname-row">
+          <div class="outname-icon"><i class="fa-solid fa-file-export"></i></div>
+          <input class="outname-input" id="outname-py" placeholder="filename (no extension)" value="encoded">
+          <span class="outname-ext">.py</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section fade-up-3">
+  <div class="section-label">Encoding Options</div>
+  <div class="options-card">
+
+    <!-- JS OPTIONS -->
+    <div class="opt-section" id="js-opts">
+      <div class="opt-header">
+        <div class="opt-header-icon js"><i class="fa-brands fa-js"></i></div>
+        <span class="opt-title">JavaScript Options</span>
+        <span class="opt-badge js-badge">JS</span>
+      </div>
+      <div class="opt-body">
+        <div class="toggle-row">
+          <div class="toggle-label-wrap"><span class="toggle-label">Minify Code</span><span class="toggle-sub">Remove whitespace &amp; comments</span></div>
+          <button class="toggle-switch on" id="tog-minify" onclick="toggleOpt(this)"></button>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-label-wrap"><span class="toggle-label">Base64 Encode</span><span class="toggle-sub">Wrap in eval(atob()) decoder</span></div>
+          <button class="toggle-switch on" id="tog-base64" onclick="toggleOpt(this)"></button>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-label-wrap"><span class="toggle-label">Variable Rename</span><span class="toggle-sub">Obfuscate variable names</span></div>
+          <button class="toggle-switch on" id="tog-varren" onclick="toggleOpt(this)"></button>
+        </div>
+        <div class="obf-level-row">
+          <div class="obf-label">Obfuscation Level</div>
+          <div class="obf-buttons">
+            <button class="obf-btn" onclick="setObfLevel('light',this)">Light</button>
+            <button class="obf-btn active" onclick="setObfLevel('medium',this)">Medium</button>
+            <button class="obf-btn" onclick="setObfLevel('heavy',this)">Heavy</button>
+          </div>
+        </div>
+        <div class="toggle-row" id="str-split-row" style="opacity:.4">
+          <div class="toggle-label-wrap"><span class="toggle-label">String Splitting</span><span class="toggle-sub">Heavy: split &amp; concat strings</span></div>
+          <button class="toggle-switch" id="tog-strsplit" onclick="toggleOpt(this)"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PY OPTIONS -->
+    <div class="opt-section" id="py-opts" style="display:none">
+      <div class="opt-header">
+        <div class="opt-header-icon py"><i class="fa-brands fa-python"></i></div>
+        <span class="opt-title">Python Output Format</span>
+        <span class="opt-badge py-badge">PY</span>
+      </div>
+      <div class="opt-body">
+        <div class="py-format-row">
+          <button class="py-fmt-btn active" id="py-fmt-base64" onclick="setPyFmt('base64',this)">
+            <i class="fa-solid fa-code"></i>
+            <span class="pf-label">Base64</span>
+            <span class="pf-sub">Encoded + exec() runner</span>
+          </button>
+          <button class="py-fmt-btn" id="py-fmt-marshal" onclick="setPyFmt('marshal',this)">
+            <i class="fa-solid fa-lock"></i>
+            <span class="pf-label">Marshal</span>
+            <span class="pf-sub">Compiled bytecode loader</span>
+          </button>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-label-wrap"><span class="toggle-label">Anti-Read Header</span><span class="toggle-sub">Junk header to confuse decoders</span></div>
+          <button class="toggle-switch on" id="tog-py-header" onclick="toggleOpt(this)"></button>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-label-wrap"><span class="toggle-label">Multi-layer Encoding</span><span class="toggle-sub">Double-encode for extra protection</span></div>
+          <button class="toggle-switch" id="tog-py-multi" onclick="toggleOpt(this)"></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section fade-up-4">
+  <button class="encode-btn" id="encode-btn" onclick="doEncode()">
+    <i class="fa-solid fa-lock-open" id="encode-btn-icon"></i>
+    <span id="encode-btn-text">Encode Now</span>
+  </button>
+</div>
+
+<div class="progress-wrap" id="progress-wrap">
+  <div class="progress-fill" id="progress-fill"></div>
+</div>
+
+<footer class="footer">
+  <div class="footer-links">
+    <a class="footer-link" href="https://github.com/M41NUL" target="_blank"><i class="fa-brands fa-github"></i> M41NUL</a>
+    <a class="footer-link" href="https://wa.me/8801308850528" target="_blank"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+    <a class="footer-link" href="https://t.me/mdmainulislaminfo" target="_blank"><i class="fa-brands fa-telegram"></i> Telegram</a>
+    <a class="footer-link" href="mailto:devmainulislam@gmail.com"><i class="fa-regular fa-envelope"></i> Email</a>
+  </div>
+  <div class="footer-copy">© <span id="footer-year"></span> X-Encoder — MAINUL-X. All rights reserved.</div>
+</footer>
+
+<!-- Result Modal -->
+<div class="result-overlay" id="result-overlay">
+  <div class="result-card" id="result-card">
+    <div class="pop-container">
+      <div class="pop-icon" id="pop-icon">
+        <svg class="check-svg" viewBox="0 0 36 36">
+          <path class="check-path" id="check-path" d="M8 18 L15 25 L28 11"/>
+        </svg>
+      </div>
+    </div>
+    <div class="result-title">Encoding Complete!</div>
+    <div class="result-sub" id="result-sub">Your code has been protected successfully.</div>
+    <div class="result-stats" id="result-stats">
+      <div class="stat-box"><div class="stat-box-val blue" id="rs-orig">—</div><div class="stat-box-lbl">Original</div></div>
+      <div class="stat-box"><div class="stat-box-val orange" id="rs-enc">—</div><div class="stat-box-lbl">Encoded</div></div>
+      <div class="stat-box"><div class="stat-box-val green" id="rs-pct">—</div><div class="stat-box-lbl">Encoded %</div></div>
+    </div>
+    <div class="result-files" id="result-files"></div>
+    <div class="result-actions">
+      <button class="ra-btn dl-all" onclick="downloadAll()"><i class="fa-solid fa-download"></i><span>Download</span></button>
+      <button class="ra-btn cp-all" onclick="copyAllOutput()"><i class="fa-regular fa-copy"></i><span>Copy Code</span></button>
+      <button class="ra-btn close-r" onclick="closeResult()"><i class="fa-solid fa-xmark"></i><span>Close</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i class="fa-solid fa-check-circle"></i><span id="toast-msg"></span></div>
+
+<!-- CodeMirror JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
+
+<script>
+var _SE = '<\/sc'+'ript>';
+var _SS = '<sc'+'ript';
+
+let currentMode = 0;
+let fileData = { web: null, py: null };
+let obfLevel = 'medium';
+let pyFmt = 'base64';
+let encodedOutputs = [];
+
+// ── Toast ──────────────────────────────────────────────
+let toastTimer = null;
+function showToast(msg, type) {
+  type = type || 'success';
+  var t = document.getElementById('toast');
+  t.querySelector('i').className = type==='success' ? 'fa-solid fa-check-circle' : type==='error' ? 'fa-solid fa-circle-xmark' : 'fa-solid fa-circle-info';
+  document.getElementById('toast-msg').textContent = msg;
+  t.className = 'toast show ' + type + '-toast';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2400);
+}
+
+// ── Mode switch ────────────────────────────────────────
+function setMode(idx, el) {
+  currentMode = idx;
+  document.querySelectorAll('.mode-tab').forEach(function(t,i){ t.classList.toggle('active', i===idx); });
+  document.querySelectorAll('.mode-panel').forEach(function(p,i){ p.classList.toggle('active', i===idx); });
+  document.getElementById('js-opts').style.display = idx===1 ? 'none' : '';
+  document.getElementById('py-opts').style.display = idx===1 ? '' : 'none';
+  setTimeout(function(){
+    if (idx === 0 && cmWeb) cmWeb.refresh();
+    if (idx === 1 && cmPy) cmPy.refresh();
+  }, 50);
+}
+
+function toggleOpt(btn) { btn.classList.toggle('on'); }
+function isOn(id) { return document.getElementById(id).classList.contains('on'); }
+
+function setObfLevel(level, el) {
+  obfLevel = level;
+  document.querySelectorAll('.obf-btn').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('str-split-row').style.opacity = level==='heavy' ? '1' : '0.4';
+}
+
+function setPyFmt(fmt, el) {
+  pyFmt = fmt;
+  document.querySelectorAll('.py-fmt-btn').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+}
+
+// ── CodeMirror VS Code instances ──────────────────────────────
+var cmWeb, cmPy;
+
+function initEditors() {
+  cmWeb = CodeMirror.fromTextArea(document.getElementById('paste-web'), {
+    mode: 'htmlmixed',
+    lineNumbers: true,
+    lineWrapping: false,
+    tabSize: 2,
+    indentWithTabs: false,
+    autofocus: false,
+    matchBrackets: true,
+    autoCloseBrackets: true,
+    styleActiveLine: true,
+    extraKeys: { 'Tab': function(cm){ cm.replaceSelection('  '); } },
+  });
+  cmWeb.setSize('100%', '260px');
+  cmWeb.on('change', function() {
+    autoDetectLangCM();
+    updateEditorMeta('web');
+  });
+
+  cmPy = CodeMirror.fromTextArea(document.getElementById('paste-py'), {
+    mode: 'python',
+    lineNumbers: true,
+    lineWrapping: false,
+    tabSize: 4,
+    indentWithTabs: false,
+    autofocus: false,
+    matchBrackets: true,
+    autoCloseBrackets: true,
+    styleActiveLine: true,
+    extraKeys: { 'Tab': function(cm){ cm.replaceSelection('    '); } },
+  });
+  cmPy.setSize('100%', '260px');
+  cmPy.on('change', function() {
+    updateEditorMeta('py');
+  });
+}
+
+function getCMValue(key) {
+  return key === 'py' ? cmPy.getValue() : cmWeb.getValue();
+}
+function setCMValue(key, val) {
+  if (key === 'py') cmPy.setValue(val);
+  else cmWeb.setValue(val);
+}
+
+function updateEditorMeta(key) {
+  var val = getCMValue(key);
+  var sizeEl = document.getElementById('editor-' + key + '-size');
+  var lineEl = document.getElementById('editor-' + key + '-lines');
+  if (sizeEl) sizeEl.textContent = fmtBytes(new Blob([val]).size);
+  if (lineEl) {
+    var lines = val ? val.split('\n').length : 1;
+    lineEl.textContent = lines + (lines === 1 ? ' line' : ' lines');
+  }
+}
+
+function autoDetectLangCM() {
+  var fd = fileData['web'];
+  var paste = getCMValue('web');
+  var extEl = document.getElementById('outext-web');
+  var tabIconEl = document.getElementById('tab-icon-web');
+  var tabFilenameEl = document.getElementById('tab-filename-web');
+  var sbLangEl = document.getElementById('sb-lang-web');
+  var ext = '.html'; var cmMode = 'htmlmixed';
+  var lang = 'HTML'; var iconClass = 'fa-brands fa-html5'; var iconColor = '#e44d26';
+  var fname = tabFilenameEl ? tabFilenameEl.textContent : 'untitled.html';
+
+  if (fd) {
+    var m = fd.name.match(/\.([^.]+)$/);
+    var e = m ? m[1].toLowerCase() : 'html';
+    if (e === 'js') { ext='.js'; cmMode='javascript'; lang='JavaScript'; iconClass='fa-brands fa-js'; iconColor='#f7df1e'; }
+    else if (e === 'css') { ext='.css'; cmMode='css'; lang='CSS'; iconClass='fa-brands fa-css3-alt'; iconColor='#264de4'; }
+    else { ext='.html'; cmMode='htmlmixed'; lang='HTML'; iconClass='fa-brands fa-html5'; iconColor='#e44d26'; }
+    fname = fd.name;
+  } else if (paste && paste.trim()) {
+    var t = paste.trim();
+    if (/^\s*(import |export |const |let |var |function |class |\/\/)/m.test(t) && !/<[a-z]/i.test(t)) {
+      ext='.js'; cmMode='javascript'; lang='JavaScript'; iconClass='fa-brands fa-js'; iconColor='#f7df1e';
+      fname = 'untitled.js';
+    } else if (/^\s*[.#]?[a-z-]+\s*\{/m.test(t) && !/<[a-z]/i.test(t)) {
+      ext='.css'; cmMode='css'; lang='CSS'; iconClass='fa-brands fa-css3-alt'; iconColor='#264de4';
+      fname = 'untitled.css';
+    } else {
+      fname = 'untitled.html';
+    }
+  } else {
+    fname = 'untitled.html';
+  }
+
+  if (extEl) extEl.textContent = ext;
+  if (tabIconEl) { tabIconEl.className = iconClass + ' editor-tab-icon'; tabIconEl.style.color = iconColor; }
+  if (tabFilenameEl) tabFilenameEl.textContent = fname;
+  if (sbLangEl) sbLangEl.innerHTML = '<i class="' + iconClass + '"></i> ' + lang;
+  if (cmWeb && cmWeb.getOption('mode') !== cmMode) cmWeb.setOption('mode', cmMode);
+}
+
+// ── File input ─────────────────────────────────────────
+function onFileChangePy(input) {
+  var file = input.files[0]; if (!file) return;
+  readFile(file, 'py');
+}
+function checkModeAutoSwitch(filename) {
+  var ext = (filename.match(/\.([^.]+)$/) || [])[1] || '';
+  if (ext === 'py' && currentMode === 0) {
+    setMode(1, document.getElementById('tab-py'));
+    showToast('Auto-switched to Python mode', 'info');
+    return 'py';
+  }
+  if ((ext === 'html' || ext === 'htm' || ext === 'js' || ext === 'css') && currentMode === 1) {
+    setMode(0, document.getElementById('tab-web'));
+    showToast('Auto-switched to HTML/JS/CSS mode', 'info');
+    return 'web';
+  }
+  return currentMode === 0 ? 'web' : 'py';
+}
+function onFileChange(input, key) {
+  var file = input.files[0]; if (!file) return;
+  var realKey = checkModeAutoSwitch(file.name);
+  readFile(file, realKey);
+}
+function readFile(file, key) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    fileData[key] = { name: file.name, content: e.target.result, size: file.size };
+    showFileBadge(key);
+    var base = file.name.replace(/\.[^.]+$/, '');
+    var outnameEl = document.getElementById('outname-' + key);
+    if (outnameEl) outnameEl.value = base;
+    setCMValue(key, e.target.result);
+    updateEditorMeta(key);
+    if (key === 'web') {
+      autoDetectLangCM();
+      var tfe = document.getElementById('tab-filename-web');
+      if (tfe) tfe.textContent = file.name;
+    }
+    if (key === 'py') {
+      var tfe2 = document.getElementById('tab-filename-py');
+      if (tfe2) tfe2.textContent = file.name;
+    }
+  };
+  reader.readAsText(file);
+}
+function showFileBadge(key) {
+  var d = fileData[key]; if (!d) return;
+  document.getElementById('fname-' + key).textContent = d.name;
+  document.getElementById('fbytes-' + key).textContent = fmtBytes(d.size);
+  document.getElementById('badge-' + key).classList.add('visible');
+}
+function clearFile(key) {
+  fileData[key] = null;
+  document.getElementById('badge-' + key).classList.remove('visible');
+  var inp = document.getElementById('file-' + key); if (inp) inp.value = '';
+  clearEditor(key);
+}
+function doDragOver(e, id) { e.preventDefault(); document.getElementById(id).classList.add('dragover'); }
+function doDragLeave(id) { document.getElementById(id).classList.remove('dragover'); }
+function doDrop(e, key) {
+  e.preventDefault();
+  document.getElementById('drop-' + key).classList.remove('dragover');
+  var file = e.dataTransfer.files[0]; if (!file) return;
+  var realKey = checkModeAutoSwitch(file.name);
+  readFile(file, realKey);
+}
+async function doPaste(key) {
+  try {
+    var text = await navigator.clipboard.readText();
+    setCMValue(key, text);
+    updateEditorMeta(key);
+    if (key === 'web') autoDetectLangCM();
+    showToast('Pasted!', 'success');
+  } catch(e) {
+    showToast('Clipboard access denied', 'error');
+  }
+}
+function clearEditor(key) {
+  setCMValue(key, '');
+  updateEditorMeta(key);
+  if (key === 'web') {
+    document.getElementById('outext-web').textContent = '.html';
+    document.getElementById('tab-filename-web').textContent = 'untitled.html';
+    document.getElementById('sb-lang-web').innerHTML = '<i class="fa-brands fa-html5"></i> HTML';
+    var ti = document.getElementById('tab-icon-web');
+    ti.className = 'fa-brands fa-html5 editor-tab-icon html'; ti.style.color = '';
+    if (cmWeb) cmWeb.setOption('mode', 'htmlmixed');
+  }
+  if (key === 'py') {
+    document.getElementById('tab-filename-py').textContent = 'untitled.py';
+  }
+}
+
+// ── Utils ──────────────────────────────────────────────
+function fmtBytes(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1024*1024) return (b/1024).toFixed(1) + ' KB';
+  return (b/1024/1024).toFixed(2) + ' MB';
+}
+function b64(s) { return btoa(unescape(encodeURIComponent(s))); }
+function shakeEl(id) {
+  var el = document.getElementById(id); if (!el) return;
+  el.style.animation = 'none'; el.offsetHeight;
+  el.style.animation = 'shake .4s ease';
+  setTimeout(function(){ el.style.animation = ''; }, 400);
+}
+function getNow() {
+  var d = new Date();
+  return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) + ' ' +
+    d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+}
+
+// ── Comment header ────────────────
+function makeCommentHeader(type, format, origSize, encSize) {
+var ratio = ((encSize / origSize) * 100).toFixed(1) + '%';
+
+var info = [
+'━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+'',
+'                X-ENCODER v2.0',
+'       Code Obfuscation & Protection Tool',
+'',
+'━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+'',
+'  Format      » ' + format,
+'  Encoded     » ' + getNow(),
+'  Orig Size   » ' + fmtBytes(origSize),
+'  Enc Size    » ' + fmtBytes(encSize),
+'  Ratio       » ' + ratio,
+'',
+'━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+'',
+'  Developer   » Md. Mainul Islam (MAINUL-X)',
+'  GitHub      » https://github.com/M41NUL',
+'  Telegram    » @mdmainulislaminfo',
+'',
+'━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+'',
+'  ⚠ Do not remove or modify this header.',
+'',
+'━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+];
+
+var prefix = (type === 'py') ? '# ' : '// ';
+return info.map(function(line) {
+return prefix + line;
+}).join('\n') + '\n\n';
+}
+
+// ── JS Encoders ───────────────────────────────────────────
+function jsMinify(code) {
+  return code
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/[^\n]*/g, '')
+    .replace(/\n\s*\n/g, '\n')
+    .replace(/^\s+/gm, '')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\s*([{}();,=+\-*\/<>!&|?:\]])\s*/g, '$1')
+    .replace(/\[\s*/g, '[').replace(/\s*\]/g, ']')
+    .trim();
+}
+function jsRenameVars(code) {
+  var reserved = new Set(['var','let','const','function','class','return','if','else','for','while','do','break','continue','switch','case','default','new','delete','typeof','instanceof','in','of','try','catch','finally','throw','async','await','import','export','from','true','false','null','undefined','this','super','extends','yield','with','void','eval','arguments','console','window','document','Math','JSON','Array','Object','String','Number','Boolean','parseInt','parseFloat','isNaN','isFinite','setTimeout','setInterval','clearTimeout','clearInterval','Promise','fetch','XMLHttpRequest','localStorage','sessionStorage','navigator','location','history','event','Error','Date','RegExp','Symbol','Map','Set','WeakMap','WeakSet','Proxy','Reflect','Intl','atob','btoa','encodeURIComponent','decodeURIComponent','encodeURI','decodeURI']);
+  var names = new Map(); var counter = 0;
+  var gen = function(){ counter++; return '_' + counter.toString(36); };
+  var declRe = /\b(?:var|let|const)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/g;
+  var fnRe = /\bfunction\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/g;
+  var m;
+  while ((m = declRe.exec(code)) !== null) if (!reserved.has(m[1]) && !names.has(m[1])) names.set(m[1], gen());
+  while ((m = fnRe.exec(code)) !== null) if (!reserved.has(m[1]) && !names.has(m[1])) names.set(m[1], gen());
+  if (obfLevel === 'heavy') {
+    var paramRe = /\(([^)]{1,60})\)/g;
+    while ((m = paramRe.exec(code)) !== null) {
+      m[1].split(',').forEach(function(p){
+        var n = p.trim();
+        if (n && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(n) && !reserved.has(n) && !names.has(n)) names.set(n, gen());
+      });
+    }
+  }
+  var result = code;
+  names.forEach(function(nw, old){
+    result = result.replace(new RegExp('\\b' + old.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '\\b', 'g'), nw);
+  });
+  return result;
+}
+function jsStringSplit(code) {
+  return code.replace(/"([^"\\]{8,})"/g, function(_, s){ var mid = Math.floor(s.length/2); return '"'+s.slice(0,mid)+'"+"'+s.slice(mid)+'"'; })
+             .replace(/'([^'\\]{8,})'/g, function(_, s){ var mid = Math.floor(s.length/2); return '"'+s.slice(0,mid)+'"+"'+s.slice(mid)+'"'; });
+}
+function encodeJS(code) {
+  var r = code;
+  if (isOn('tog-minify')) r = jsMinify(r);
+  if (isOn('tog-varren')) r = jsRenameVars(r);
+  if (obfLevel === 'heavy' && isOn('tog-strsplit')) r = jsStringSplit(r);
+  if (isOn('tog-base64')) {
+    var e = b64(r);
+    r = obfLevel === 'heavy' ? 'eval(atob("' + b64('eval(atob("' + e + '"))') + '"))' : 'eval(atob("' + e + '"))';
+  }
+  return r;
+}
+function encodeCSS(code) {
+  return code.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\s{2,}/g,' ').replace(/\s*([{}:;,])\s*/g,'$1').trim();
+}
+function encodeHTML(code) {
+  var r = code;
+  r = r.replace(/<script(\b[^>]*)>([\s\S]*?)<\/script>/gi, function(m, a, js){
+    if (!js.trim()) return m;
+    var encoded = encodeJS(js);
+    return _SS + a + '>' + encoded + _SE;
+  });
+  r = r.replace(/<style(\b[^>]*)>([\s\S]*?)<\/style>/gi, function(m, a, css){
+    if (!css.trim()) return m;
+    return '<style' + a + '>' + encodeCSS(css) + '<\/style>';
+  });
+  r = r.replace(/<!--[\s\S]*?-->/g,'').replace(/\n\s*\n/g,'\n').replace(/^\s+/gm,'').trim();
+  return r;
+}
+
+// ── Python Encoder (Fixed & Working) ──────────────────
+function encodePython(code) {
+  var header = '';
+  if (isOn('tog-py-header')) {
+    var junk = Math.random().toString(36).slice(2,18).toUpperCase();
+    header = '# -*- coding: utf-8 -*-\n';
+    header += '# X-Encoder Protected | ' + junk + '\n';
+    header += '# DO NOT EDIT — Encoded with X-Encoder v2.0\n\n';
+  }
+
+  var multi = isOn('tog-py-multi');
+
+  if (pyFmt === 'base64') {
+    var encoded = b64(code);
+    if (multi) {
+      var layer2 = b64(encoded);
+      return header +
+        'import base64\n' +
+        '_x = "' + layer2 + '"\n' +
+        '_y = base64.b64decode(_x).decode()\n' +
+        '_z = base64.b64decode(_y).decode()\n' +
+        'exec(compile(_z, "<string>", "exec"))\n';
+    } else {
+      return header +
+        'import base64\n' +
+        '_x = "' + encoded + '"\n' +
+        '_y = base64.b64decode(_x).decode()\n' +
+        'exec(compile(_y, "<string>", "exec"))\n';
+    }
+  } else {
+    var encoded2 = b64(code);
+    if (multi) {
+      var layer2b = b64(encoded2);
+      return header +
+        'import base64, marshal, types\n' +
+        '_x = "' + layer2b + '"\n' +
+        '_y = base64.b64decode(_x).decode()\n' +
+        '_z = base64.b64decode(_y).decode()\n' +
+        '_code = compile(_z, "<protected>", "exec")\n' +
+        'exec(_code)\n';
+    } else {
+      return header +
+        'import base64, marshal, types\n' +
+        '_x = "' + encoded2 + '"\n' +
+        '_y = base64.b64decode(_x).decode()\n' +
+        '_code = compile(_y, "<protected>", "exec")\n' +
+        'exec(_code)\n';
+    }
+  }
+}
+
+// ── Progress ───────────────────────────────────────────
+function setProgress(pct) {
+  var w = document.getElementById('progress-wrap');
+  var f = document.getElementById('progress-fill');
+  if (pct <= 0) { w.classList.remove('visible'); f.style.width='0%'; return; }
+  w.classList.add('visible'); f.style.width = Math.min(pct,100)+'%';
+}
+
+// ── Main encode ────────────────────────────────────────
+async function doEncode() {
+  var btn = document.getElementById('encode-btn');
+  var icon = document.getElementById('encode-btn-icon');
+  var text = document.getElementById('encode-btn-text');
+  encodedOutputs = [];
+
+  var key = currentMode === 0 ? 'web' : 'py';
+  var paste = getCMValue(key).trim();
+  var fd = fileData[key];
+  var code = fd ? fd.content : paste;
+  if (!code || !code.trim()) {
+    shakeEl('drop-' + key);
+    showToast('No code or file provided!', 'error');
+    return;
+  }
+
+  var outnameVal = document.getElementById('outname-' + key).value.trim() || 'encoded';
+  var ext = 'html';
+  if (currentMode === 1) { ext = 'py'; }
+  else {
+    var extEl = document.getElementById('outext-web');
+    ext = extEl ? extEl.textContent.replace('.','') : 'html';
+  }
+  var outName = outnameVal + '.' + ext;
+
+  btn.disabled = true; icon.style.display = 'none';
+  var sp = document.createElement('div'); sp.className = 'btn-spinner';
+  btn.insertBefore(sp, text); text.textContent = 'Encoding.';
+  var dots = 1;
+  var dotInterval = setInterval(function(){
+    dots = dots >= 3 ? 1 : dots+1;
+    text.textContent = 'Encoding' + '.'.repeat(dots);
+  }, 380);
+
+  setProgress(15);
+  await new Promise(function(r){ setTimeout(r, 100); });
+  setProgress(40);
+  await new Promise(function(r){ setTimeout(r, 100); });
+
+  var encoded;
+  var origSize = new Blob([code]).size;
+  if (currentMode === 1) {
+    encoded = encodePython(code);
+  } else {
+    var langEl = document.getElementById('outext-web');
+    var ext2 = langEl ? langEl.textContent.replace('.','') : 'html';
+    if (ext2 === 'js') encoded = encodeJS(code);
+    else if (ext2 === 'css') encoded = encodeCSS(code);
+    else encoded = encodeHTML(code);
+  }
+
+  setProgress(75);
+  await new Promise(function(r){ setTimeout(r, 80); });
+
+  var ctype = currentMode === 1 ? 'py' : ext;
+  var fmtLabel = currentMode === 1 ? (pyFmt === 'base64' ? 'Python Base64' : 'Python Marshal') : (ext.toUpperCase() + ' Obfuscated');
+  var encSize = new Blob([encoded]).size;
+  var commentHeader = makeCommentHeader(ctype, fmtLabel, origSize, encSize);
+
+  if (ctype === 'html') {
+    var htmlComment = '<!--\n' + commentHeader.replace(/^\/\/ /gm, '').trim() + '\n-->\n';
+    if (/<head[^>]*>/i.test(encoded)) {
+      encoded = encoded.replace(/(<head[^>]*>)/i, '$1\n' + htmlComment);
+    } else {
+      encoded = htmlComment + encoded;
+    }
+  } else {
+    encoded = commentHeader + encoded;
+  }
+
+  encodedOutputs.push({ name: outName, content: encoded, origSize: origSize, encSize: new Blob([encoded]).size, type: ctype });
+
+  setProgress(100);
+  await new Promise(function(r){ setTimeout(r, 280); });
+  setProgress(0);
+
+  clearInterval(dotInterval);
+  btn.disabled = false; icon.style.display = ''; sp.remove(); text.textContent = 'Encode Now';
+  btn.classList.add('success-flash');
+  setTimeout(function(){ btn.classList.remove('success-flash'); }, 900);
+
+  showResultModal();
+}
+
+function showResultModal() {
+  var out = encodedOutputs[0]; if (!out) return;
+
+  var icon = document.getElementById('pop-icon');
+  icon.style.animation = 'none'; icon.getBoundingClientRect(); icon.style.animation = '';
+  var cp = document.getElementById('check-path');
+  cp.style.animation = 'none'; cp.getBoundingClientRect(); cp.style.animation = '';
+
+  document.getElementById('rs-orig').textContent = fmtBytes(out.origSize);
+  document.getElementById('rs-enc').textContent = fmtBytes(out.encSize);
+  var pct = ((out.encSize / out.origSize) * 100).toFixed(1);
+  document.getElementById('rs-pct').textContent = pct + '%';
+  document.getElementById('result-sub').textContent = out.name + ' ready to download.';
+
+  var filesEl = document.getElementById('result-files');
+  filesEl.innerHTML = '';
+  var iconMap = { html:'fa-brands fa-html5',css:'fa-brands fa-css3-alt',js:'fa-brands fa-js',py:'fa-brands fa-python' };
+  var bgMap = { html:'rgba(255,107,0,.15)',css:'rgba(10,132,255,.15)',js:'rgba(255,214,10,.12)',py:'rgba(55,118,171,.15)' };
+  var clrMap = { html:'#FF6B00',css:'#0A84FF',js:'#FFD60A',py:'#4fc1ff' };
+  encodedOutputs.forEach(function(o, i){
+    var t = o.type;
+    var row = document.createElement('div'); row.className = 'rf-row';
+    row.innerHTML = '<div class="rf-icon" style="background:' + (bgMap[t]||'rgba(255,107,0,.15)') + '"><i class="' + (iconMap[t]||'fa-solid fa-file-code') + '" style="color:' + (clrMap[t]||'#FF6B00') + '"></i></div><div class="rf-info"><div class="rf-name">' + o.name + '</div><div class="rf-meta">' + fmtBytes(o.origSize) + ' → ' + fmtBytes(o.encSize) + '</div></div><button class="rf-dl" onclick="downloadSingle(' + i + ')"><i class="fa-solid fa-download"></i> Save</button>';
+    filesEl.appendChild(row);
+  });
+
+  var card = document.getElementById('result-card');
+  card.style.animation = 'none'; card.getBoundingClientRect(); card.style.animation = '';
+  document.getElementById('result-overlay').classList.add('active');
+}
+
+function closeResult() { document.getElementById('result-overlay').classList.remove('active'); }
+
+function downloadSingle(idx) {
+  var o = encodedOutputs[idx]; if (!o) return;
+  triggerDl(o.content, o.name);
+  showToast('Saved: ' + o.name, 'success');
+}
+function downloadAll() {
+  if (!encodedOutputs.length) return;
+  encodedOutputs.forEach(function(o,i){ setTimeout(function(){ triggerDl(o.content, o.name); }, i*250); });
+  showToast('Downloaded!', 'success');
+}
+async function copyAllOutput() {
+  if (!encodedOutputs.length) return;
+  try {
+    await navigator.clipboard.writeText(encodedOutputs.map(function(o){ return o.content; }).join('\n\n'));
+    showToast('Copied to clipboard!', 'success');
+  } catch(e) { showToast('Copy failed', 'error'); }
+}
+
+function triggerDl(content, filename) {
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], { type:'text/plain;charset=utf-8' }));
+  a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+}
+
+document.getElementById('footer-year').textContent = new Date().getFullYear();
+initEditors();
+</script>
+</body>
+</html>
